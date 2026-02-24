@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260223-ui34" />
+</head>
+<body data-page="agenda">
+  <header class="site-header">
+    <div>
+      <h1>Agenda</h1>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-primary header-icon-btn" href="dashboard.html" aria-label="Back to Dashboard" data-tooltip="Back to Dashboard">&#8592;</a>
+      <button class="btn btn-primary header-icon-btn logout-icon-btn" type="button" onclick="logout()" aria-label="Sign Out" data-tooltip="Sign Out">
+        <svg class="logout-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M10 4H4v16h6"></path>
+          <path d="M11 12h9"></path>
+          <path d="m16 7 5 5-5 5"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="page fade-in">
+    <section class="content-panel">
+      <div id="agenda-table-wrap" class="table-wrap" role="region" aria-label="Agenda table"></div>
+    </section>
+  </main>
+
+  <!-- XLSX parsing moved to Python - data now in data/agenda_data.json -->
+  <script src="assets/js/app.js?v=20260223-holi16" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

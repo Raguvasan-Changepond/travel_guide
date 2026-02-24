@@ -1,0 +1,40 @@
+{
+    "title":  "Chennai at a Glance",
+    "summary":  "Chennai, formerly known as Madras, is one of India\u0027s major coastal metros. It blends deep cultural heritage, modern business districts, and strong manufacturing and technology sectors. The city is known for its classical arts, educational institutions, and strategic access to ports, highways, and airports.",
+    "highlights":  [
+                       "Capital city of Tamil Nadu and a key South Indian business hub",
+                       "Rich Dravidian history, temples, music, and architecture",
+                       "Strong IT, automotive, logistics, and healthcare ecosystem",
+                       "Gateway to heritage destinations along the East Coast Road"
+                   ],
+    "history":  [
+                    "Among India\u0027s oldest inhabited regions, with very early human settlement evidence.",
+                    "In the Sangam age, it prospered via maritime trade with Rome and Southeast Asia.",
+                    "Mylapore is traditionally linked to Thiruvalluvar, author of the Tirukkural.",
+                    "Pallava and Chola dynasties expanded temples, ports, and overseas trade.",
+                    "European contact began with Portuguese settlers in San Thome, then Dutch traders.",
+                    "The British East India Company established Fort St. George, shaping colonial Madras.",
+                    "Madras became capital of the Madras Presidency with modern civic and legal systems.",
+                    "Royapuram Station, South India\u0027s first railway station, accelerated regional trade.",
+                    "After independence, Madras evolved into modern Chennai, Tamil Nadu\u0027s capital.",
+                    "Chennai became known as the \u0027Detroit of India\u0027 for automobile manufacturing.",
+                    "Its OMR IT corridor hosts many major global technology companies.",
+                    "Chennai Port remains one of India\u0027s largest gateways for trade and logistics.",
+                    "The city is a cultural center for classical music, dance, and temple heritage.",
+                    "Today, Chennai blends deep heritage with modern industry and multinational presence."
+                ],
+    "images":  [
+                   {
+                       "src":  "assets/images/chennai-central-station.jpg",
+                       "alt":  "Chennai Central railway station"
+                   },
+                   {
+                       "src":  "assets/images/omr-wall-paint.jpg",
+                       "alt":  "Wall painting artwork near OMR, Chennai"
+                   }
+               ],
+    "wikiLink":  {
+                     "label":  "Chennai - Wikipedia",
+                     "url":  "https://en.wikipedia.org/wiki/Chennai"
+                 }
+}

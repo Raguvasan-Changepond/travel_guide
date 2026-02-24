@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Client Visit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260223-ui34" />
+</head>
+
+<body data-page="dashboard">
+
+  <!-- Top bar (previously header) -->
+  <div class="site-header">
+    <div>
+      <h1 id="header-title"></h1>
+    </div>
+
+    <div class="header-actions">
+      <a class="btn btn-primary header-icon-btn" href="index.html" aria-label="Home" data-tooltip="Home">&#8962;</a>
+
+      <button class="btn btn-primary header-icon-btn logout-icon-btn" type="button" onclick="logout()" aria-label="Sign Out" data-tooltip="Sign Out">
+        <svg class="logout-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M10 4H4v16h6"></path>
+          <path d="M11 12h9"></path>
+          <path d="m16 7 5 5-5 5"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="page fade-in">
+    <section class="cards-grid" aria-label="Main navigation">
+      <a class="nav-card" href="about.html">
+        <div class="card-title">
+          <span class="card-glyph" aria-hidden="true">&#9432;</span>
+          <h2>About Chennai</h2>
+        </div>
+        <p>Discover the city's history, culture, and essentials.</p>
+      </a>
+
+      <a class="nav-card" href="places.html">
+        <div class="card-title">
+          <span class="card-glyph" aria-hidden="true">&#128205;</span>
+          <h2>Places to Visit in Chennai</h2>
+        </div>
+        <p>Curated destinations for exploration.</p>
+      </a>
+      <a class="nav-card" href="agenda.html">
+        <div class="card-title">
+          <span class="card-glyph" aria-hidden="true">&#128197;</span>
+          <h2>Agenda</h2>
+        </div>
+        <p>View the agenda here.</p>
+      </a>
+      <a class="nav-card" href="travel-tips.html">
+        <div class="card-title">
+          <span class="card-glyph" aria-hidden="true">&#9992;</span>
+          <h2>Travel Essentials</h2>
+        </div>
+        <p>Visa, SIM, transport, safety, and local essentials.</p>
+      </a>
+      <article class="nav-card nav-card-links" aria-label="Useful external links">
+        <div class="card-title">
+          <span class="card-glyph" aria-hidden="true">&#128279;</span>
+          <h2>Useful Links</h2>
+        </div>
+        <p>Quick access to city and travel reference links.</p>
+        <div class="links-actions">
+          <a class="mini-link-btn mini-link-btn-highlight" href="https://en.wikipedia.org/wiki/Chennai" target="_blank" rel="noopener noreferrer">Wiki Links</a>
+          <a class="mini-link-btn mini-link-btn-highlight" href="https://www.tripadvisor.in/Tourism-g304556-Chennai_Madras_Chennai_District_Tamil_Nadu-Vacations.html" target="_blank" rel="noopener noreferrer">Tripadvisor</a>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="assets/js/app.js?v=20260223-holi16" defer></script>
+</body>
+</html>
+
+
+
+
+

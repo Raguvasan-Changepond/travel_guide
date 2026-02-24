@@ -1,0 +1,108 @@
+[
+  {
+    "name": "Mahabalipuram",
+    "description": "UNESCO-recognized coastal heritage town known for ancient rock-cut temples and shore monuments from the Pallava period.",
+    "destination": "Mahabalipuram, Tamil Nadu",
+    "image": "assets/images/places/mahabalipuram/mahabalipuram-1.jpg",
+    "quickNotes": [
+      "Best known for Shore Temple and Pancha Rathas.",
+      "Ideal for compact 60-90 minute heritage walk.",
+      "Popular sunrise and seaside photography stop.",
+      "UNESCO-listed monuments are within short drive distance.",
+      "Stone-carving craft shops are common around the site.",
+      "Morning visits are generally less crowded."
+    ],
+    "images": [
+      "assets/images/places/mahabalipuram/mahabalipuram-1.jpg",
+      "assets/images/places/mahabalipuram/mahabalipuram-2.jpeg",
+      "assets/images/places/mahabalipuram/mahabalipuram-3.jpg",
+      "assets/images/places/mahabalipuram/mahabalipuram-4.jpg",
+      "assets/images/places/mahabalipuram/mahabalipuram-5.jpg"
+    ]
+  },
+  {
+    "name": "Dakshina Chitra",
+    "description": "Living-history museum showcasing South Indian arts, architecture, and traditional crafts through curated exhibits.",
+    "destination": "Dakshina Chitra Heritage Museum, Chennai",
+    "image": "assets/images/places/dakshina-chitra/dakshina-chitra-1.jpg",
+    "quickNotes": [
+      "Open-air cultural museum with recreated heritage homes.",
+      "Handicraft demonstrations and folk-art exhibits available.",
+      "Great spot for short curated cultural immersion.",
+      "Traditional architecture sections represent multiple South Indian states.",
+      "Workshops and performances are often scheduled on weekends.",
+      "Pathways are easy to cover in a compact visit window."
+    ],
+    "images": [
+      "assets/images/places/dakshina-chitra/dakshina-chitra-1.jpg",
+      "assets/images/places/dakshina-chitra/dakshina-chitra-2.jpg",
+      "assets/images/places/dakshina-chitra/dakshina-chitra-3.jpg",
+      "assets/images/places/dakshina-chitra/dakshina-chitra-4.jpg",
+      "assets/images/places/dakshina-chitra/dakshina-chitra-5.jpg"
+    ]
+  },
+  {
+    "name": "St. Thomas Mount",
+    "description": "Historic hilltop church site offering panoramic city views and significant religious heritage.",
+    "destination": "St. Thomas Mount, Chennai",
+    "image": "assets/images/places/st-thomas-mount/st-thomas-mount-1.jpg",
+    "quickNotes": [
+      "Hilltop location with broad view of Chennai skyline.",
+      "Historic chapel with strong religious significance.",
+      "Quick evening stop recommended for view and photos.",
+      "Access includes steps and a short uphill approach.",
+      "Clear weather offers excellent citywide visibility.",
+      "Useful stop for both heritage and viewpoint interests."
+    ],
+    "images": [
+      "assets/images/places/st-thomas-mount/st-thomas-mount-1.jpg",
+      "assets/images/places/st-thomas-mount/st-thomas-mount-2.jpg",
+      "assets/images/places/st-thomas-mount/st-thomas-mount-3.jpg",
+      "assets/images/places/st-thomas-mount/st-thomas-mount-4.jpg",
+      "assets/images/places/st-thomas-mount/st-thomas-mount-5.jpg"
+    ]
+  },
+  {
+    "name": "Marina Beach",
+    "description": "Iconic urban beachfront in Chennai known for its long sandy shoreline, sunrise views, and lively promenade.",
+    "destination": "Marina Beach, Chennai",
+    "image": "assets/images/places/marina-beach/marina_beach-5.jpg",
+    "quickNotes": [
+      "One of the longest urban beaches in the world.",
+      "Sunrise and sunset are ideal times for photography.",
+      "A lively stretch with popular local snack stalls.",
+      "Close to major city landmarks and memorials.",
+      "Great for short walks along the broad sandy shore.",
+      "Evenings are vibrant with family-friendly activity zones.",
+      "Follow local safety advisories and avoid rough surf areas."
+    ],
+    "images": [
+      "assets/images/places/marina-beach/marina_beach-1.jpg",
+      "assets/images/places/marina-beach/marina_beach-2.jpg",
+      "assets/images/places/marina-beach/marina_beach-3.jpg",
+      "assets/images/places/marina-beach/marina_beach-4.jpg",
+      "assets/images/places/marina-beach/marina_beach-5.jpg"
+    ]  
+  },
+  {
+    "name": "Egmore Museum",
+    "description": "Government Museum complex with archaeology, art, and historical galleries representing Tamil Nadu's legacy.",
+    "destination": "Government Museum Egmore, Chennai",
+    "image": "assets/images/places/egmore-museum/egmore-museum-1.jpg",
+    "quickNotes": [
+      "One of India's oldest museums with diverse collections.",
+      "Highlights include archaeology, art, and bronze galleries.",
+      "Compact heritage stop in central Chennai.",
+      "Complex includes multiple buildings with distinct exhibits.",
+      "Bronze and numismatic sections are visitor favorites.",
+      "Centrally located with convenient city access."
+    ],
+    "images": [
+      "assets/images/places/egmore-museum/egmore-museum-1.jpg",
+      "assets/images/places/egmore-museum/egmore-museum-2.jpg",
+      "assets/images/places/egmore-museum/egmore-museum-3.jpg",
+      "assets/images/places/egmore-museum/egmore-museum-4.jpg",
+      "assets/images/places/egmore-museum/egmore-museum-5.jpg"
+    ]
+  }
+]

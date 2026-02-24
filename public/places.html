@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Places to Visit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260223-ui34" />
+</head>
+<body data-page="places">
+  <header class="site-header">
+    <div>
+      <h1>Places to Visit in Chennai</h1>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-primary header-icon-btn" href="dashboard.html" aria-label="Back to Dashboard" data-tooltip="Back to Dashboard">&#8592;</a>
+      <button class="btn btn-primary header-icon-btn logout-icon-btn" type="button" onclick="logout()" aria-label="Sign Out" data-tooltip="Sign Out">
+        <svg class="logout-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M10 4H4v16h6"></path>
+          <path d="M11 12h9"></path>
+          <path d="m16 7 5 5-5 5"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="page fade-in">
+    <section id="places-grid" class="places-slider-wrap" aria-label="Places carousel">
+      <p class="muted">Loading places...</p>
+    </section>
+  </main>
+
+  <dialog id="place-dialog" class="place-dialog">
+    <article>
+      <button class="dialog-close" id="close-dialog" aria-label="Close">&times;</button>
+      <img id="dialog-image" src="" alt="" class="dialog-image" />
+      <div class="dialog-heading">
+        <h2 id="dialog-title"></h2>
+        <a id="direction-link" class="btn btn-primary" target="_blank" rel="noopener noreferrer" aria-label="Get directions">
+          <svg class="gmaps-nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="#34A853" d="M12 2c-3.87 0-7 3.13-7 7 0 5.12 5.88 11.13 6.13 11.38.48.49 1.26.49 1.74 0 .25-.25 6.13-6.26 6.13-11.38 0-3.87-3.13-7-7-7z"></path>
+            <path fill="#4285F4" d="M12 2c2.67 0 4.97 1.5 6.13 3.7L12 12.1 5.87 5.7C7.03 3.5 9.33 2 12 2z"></path>
+            <path fill="#FBBC04" d="M12 12.1 18.13 5.7A6.96 6.96 0 0 1 19 9c0 2.51-1.57 5.38-3.2 7.7H12v-4.6z"></path>
+            <path fill="#EA4335" d="M12 12.1v4.6H8.2C6.57 14.38 5 11.51 5 9c0-1.18.29-2.28.87-3.3L12 12.1z"></path>
+            <circle cx="12" cy="9" r="2.2" fill="#fff"></circle>
+          </svg>
+        </a>
+      </div>
+      <div id="dialog-gallery" class="dialog-gallery" aria-label="Place images"></div>
+      <p id="dialog-description"></p>
+      <ul id="dialog-notes" class="dialog-notes"></ul>
+    </article>
+  </dialog>
+
+  <script src="assets/js/app.js?v=20260223-holi16" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
