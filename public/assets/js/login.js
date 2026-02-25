@@ -8,6 +8,57 @@ function showError(message) {
     }, 5000);
 }
 
+function setupLoginCardToggle() {
+    const loginContainer = document.getElementById("loginContainer");
+    const toggleCardButton = document.getElementById("toggleCardButton");
+    const usernameInput = document.getElementById("username");
+
+    if (!loginContainer || !toggleCardButton) return;
+
+    const setCardState = (isVisible) => {
+        loginContainer.classList.toggle("show", isVisible);
+        toggleCardButton.classList.toggle("is-card-open", isVisible);
+        toggleCardButton.setAttribute("aria-label", isVisible ? "Hide sign in card" : "Show sign in card");
+        toggleCardButton.setAttribute("title", isVisible ? "Hide sign in card" : "Show sign in card");
+        if (isVisible && usernameInput) usernameInput.focus();
+    };
+
+    setCardState(false);
+    toggleCardButton.addEventListener("click", () => {
+        const isVisible = !loginContainer.classList.contains("show");
+        setCardState(isVisible);
+    });
+}
+
+function setupVideoControls() {
+    const loginVideoWrap = document.getElementById("loginVideoWrap");
+    const loginBgVideo = document.getElementById("loginBgVideo");
+    const toggleMuteButton = document.getElementById("toggleMuteButton");
+    if (!loginVideoWrap || !loginBgVideo || !toggleMuteButton) return;
+
+    const syncMuteLabel = () => {
+        toggleMuteButton.classList.toggle("is-muted", loginBgVideo.muted);
+        const label = loginBgVideo.muted ? "Unmute video" : "Mute video";
+        toggleMuteButton.setAttribute("aria-label", label);
+        toggleMuteButton.setAttribute("title", label);
+    };
+
+    loginBgVideo.addEventListener("error", () => {
+        loginVideoWrap.classList.add("video-fallback");
+    });
+
+    loginBgVideo.addEventListener("ended", () => {
+        loginVideoWrap.classList.add("video-ended");
+    });
+
+    toggleMuteButton.addEventListener("click", () => {
+        loginBgVideo.muted = !loginBgVideo.muted;
+        syncMuteLabel();
+    });
+
+    syncMuteLabel();
+}
+
 async function checkExistingSession() {
     try {
         const response = await fetch("/api/session", {
@@ -90,5 +141,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     }
 });
 
+setupLoginCardToggle();
+setupVideoControls();
 checkExistingSession();
 
