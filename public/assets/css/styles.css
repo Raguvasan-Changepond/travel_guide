@@ -60,7 +60,7 @@ body[data-page="welcome"] {
 }
 
 body[data-page="dashboard"] {
-  --page-bg: url("../images/chennai-central-station.jpg");
+  --page-bg: url("../images/change-pond.webp");
 }
 
 body[data-page="about"] {
@@ -487,6 +487,22 @@ h3 {
   gap: 1rem;
 }
 
+body[data-page="dashboard"] .cards-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: row;
+}
+
+body[data-page="dashboard"] .cards-grid .nav-card {
+  aspect-ratio: 1.5/ 0.8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+body[data-page="dashboard"] .cards-grid .nav-card p {
+  margin: 0;
+}
+
 .nav-card,
 .place-card {
   background: linear-gradient(156deg, rgba(244, 250, 255, 0.94) 0%, rgba(226, 238, 251, 0.9) 54%, rgba(206, 225, 246, 0.86) 100%);
@@ -547,6 +563,62 @@ body[data-page="dashboard"] .nav-card .card-title h2 {
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+}
+
+.nav-card-video {
+  padding: 0;
+  overflow: hidden;
+}
+
+.dashboard-video-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 2.0 / 0.8;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(10, 26, 44, 0.3);
+}
+
+.dashboard-video-poster,
+.dashboard-card-video {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 2.0 / 0.8;
+  display: block;
+  object-fit: cover;
+}
+
+.dashboard-video-play-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 230, 247, 0.8);
+  background: rgba(233, 246, 255, 0.9);
+  color: #1c4167;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 24px rgba(20, 39, 59, 0.3);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.dashboard-video-play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.04);
+  box-shadow: 0 16px 28px rgba(20, 39, 59, 0.34);
+  background: rgba(240, 251, 255, 0.96);
+}
+
+.dashboard-video-play-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  margin-left: 2px;
 }
 
 .nav-card-links p {
@@ -1365,6 +1437,10 @@ th {
 
   .places-carousel {
     grid-template-columns: 1fr;
+  }
+
+  body[data-page="dashboard"] .cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .carousel-controls {

@@ -24,9 +24,43 @@ import urllib.parse
 
 
 BASE_DIR = Path(__file__).resolve().parent
+CONFIG_DIR = BASE_DIR / "config"
 PUBLIC_DIR = BASE_DIR / "public"
-DATA_DIR = BASE_DIR / "config" / "data"
-AGENDA_PATH = BASE_DIR / "config" / "Agenda.xlsx"
+DATA_DIR = CONFIG_DIR / "data"
+AGENDA_EXTENSIONS = {".xlsx", ".xls"}
+
+
+def resolve_latest_agenda_path():
+    """Return the most recently modified agenda Excel file from config/."""
+    candidates = [
+        path
+        for path in CONFIG_DIR.iterdir()
+        if path.is_file() and path.suffix.lower() in AGENDA_EXTENSIONS
+    ]
+    if not candidates:
+        raise FileNotFoundError(f"No agenda Excel file found in: {CONFIG_DIR}")
+    return max(candidates, key=lambda path: path.stat().st_mtime)
+
+
+def detect_header_row(ws, search_rows=10):
+    """Find the first likely header row by scanning for non-empty cells."""
+    upper_bound = min(ws.max_row, search_rows)
+    for row_idx in range(1, upper_bound + 1):
+        non_empty = 0
+        for col_idx in range(1, ws.max_column + 1):
+            value = ws.cell(row=row_idx, column=col_idx).value
+            if value is not None and str(value).strip():
+                non_empty += 1
+        if non_empty >= 2:
+            return row_idx
+    return 1
+
+
+def normalize_label(value):
+    """Normalize sheet/header labels for robust matching."""
+    if value is None:
+        return ""
+    return str(value).strip().lower()
 
 
 def read_env_int(name, default):
@@ -56,6 +90,13 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
         "/api/places": DATA_DIR / "places.json",
     }
 
+    def handle(self):
+        """Ignore common browser disconnects to avoid noisy stack traces."""
+        try:
+            super().handle()
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            return
+
     def translate_path(self, path):
         """Serve files only from public directory."""
         parsed_path = urllib.parse.urlparse(path).path
@@ -81,6 +122,14 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
         """Handle GET routes."""
         route = urllib.parse.urlparse(self.path).path
 
+        # Browsers probe /favicon.ico by default; map it to our configured favicon.
+        if route == "/favicon.ico":
+            self.path = "/assets/images/cp_logo_fav_iccon.jfif"
+            try:
+                return super().do_GET()
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                return
+
         if route == "/api/health":
             self.send_json(200, {"status": "ok"})
             return
@@ -101,7 +150,10 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
             self.send_json(404, {"error": "Endpoint not found"})
             return
 
-        return super().do_GET()
+        try:
+            return super().do_GET()
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            return
 
     def do_POST(self):
         """Handle POST routes."""
@@ -211,56 +263,68 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
 
     def get_agenda_from_excel(self):
         """Read Excel file and return JSON data."""
-        if not AGENDA_PATH.exists():
-            raise FileNotFoundError(f"Excel file not found: {AGENDA_PATH}")
-
-        wb = openpyxl.load_workbook(AGENDA_PATH, data_only=True)
+        agenda_path = resolve_latest_agenda_path()
+        wb = openpyxl.load_workbook(agenda_path, data_only=True)
         try:
-            # Read column config from Config sheet
+            # Read column config from Config sheet (case-insensitive match)
             column_config = {}
-            if "Config" in wb.sheetnames:
-                config_ws = wb["Config"]
+            config_sheet_name = next((name for name in wb.sheetnames if normalize_label(name) == "config"), None)
+            if config_sheet_name:
+                config_ws = wb[config_sheet_name]
                 for row_idx in range(2, config_ws.max_row + 1):
                     sheet_name = config_ws.cell(row_idx, 1).value
                     columns = config_ws.cell(row_idx, 2).value
                     if sheet_name and columns:
-                        column_config[str(sheet_name).strip()] = [c.strip() for c in str(columns).split(",")]
+                        column_config[normalize_label(sheet_name)] = [
+                            normalize_label(c) for c in str(columns).split(",") if normalize_label(c)
+                        ]
+            configured_sheets = set(column_config.keys())
 
             all_sheets_data = {}
 
             for sheet_name in wb.sheetnames:
                 # Skip Config sheet
-                if sheet_name == "Config":
+                if normalize_label(sheet_name) == "config":
+                    continue
+                # If config sheet has entries, only include configured sheets.
+                if configured_sheets and normalize_label(sheet_name) not in configured_sheets:
                     continue
 
                 ws = wb[sheet_name]
                 if ws.sheet_state == "hidden":
                     continue
 
+                header_row = detect_header_row(ws)
+
                 # Get all headers
                 all_headers = []
                 header_map = {}
                 for col_idx in range(1, ws.max_column + 1):
-                    cell = ws.cell(row=1, column=col_idx)
-                    header = cell.value if cell.value else ""
+                    cell = ws.cell(row=header_row, column=col_idx)
+                    header = str(cell.value).strip() if cell.value else ""
                     all_headers.append(header)
                     if header:
-                        header_map[header] = col_idx
+                        header_map[normalize_label(header)] = {"name": header, "index": col_idx}
 
                 # Filter headers based on config
-                if sheet_name in column_config:
-                    headers = [h for h in column_config[sheet_name] if h in header_map]
+                sheet_key = normalize_label(sheet_name)
+                if sheet_key in column_config:
+                    headers = [
+                        header_map[h]["name"]
+                        for h in column_config[sheet_key]
+                        if h in header_map
+                    ]
                 else:
                     headers = [h for h in all_headers if h]
 
                 # Get data rows
                 rows = []
-                for row_idx in range(2, ws.max_row + 1):
+                for row_idx in range(header_row + 1, ws.max_row + 1):
                     row_data = {}
                     for header in headers:
-                        col_idx = header_map.get(header)
-                        if col_idx:
-                            cell = ws.cell(row=row_idx, column=col_idx)
+                        mapped = header_map.get(normalize_label(header))
+                        if mapped:
+                            cell = ws.cell(row=row_idx, column=mapped["index"])
                             row_data[header] = self.serialize_value(cell.value)
                     # Skip rows that are fully empty across configured headers.
                     if any(value != "" for value in row_data.values()):

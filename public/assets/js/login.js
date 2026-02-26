@@ -8,55 +8,78 @@ function showError(message) {
     }, 5000);
 }
 
-function setupLoginCardToggle() {
-    const loginContainer = document.getElementById("loginContainer");
-    const toggleCardButton = document.getElementById("toggleCardButton");
-    const usernameInput = document.getElementById("username");
-
-    if (!loginContainer || !toggleCardButton) return;
-
-    const setCardState = (isVisible) => {
-        loginContainer.classList.toggle("show", isVisible);
-        toggleCardButton.classList.toggle("is-card-open", isVisible);
-        toggleCardButton.setAttribute("aria-label", isVisible ? "Hide sign in card" : "Show sign in card");
-        toggleCardButton.setAttribute("title", isVisible ? "Hide sign in card" : "Show sign in card");
-        if (isVisible && usernameInput) usernameInput.focus();
-    };
-
-    setCardState(false);
-    toggleCardButton.addEventListener("click", () => {
-        const isVisible = !loginContainer.classList.contains("show");
-        setCardState(isVisible);
-    });
-}
-
-function setupVideoControls() {
+function setupVideoExperience() {
     const loginVideoWrap = document.getElementById("loginVideoWrap");
     const loginBgVideo = document.getElementById("loginBgVideo");
+    const playVideoButton = document.getElementById("playVideoButton");
+    const replayVideoButton = document.getElementById("replayVideoButton");
+    const continueButton = document.getElementById("continueButton");
     const toggleMuteButton = document.getElementById("toggleMuteButton");
-    if (!loginVideoWrap || !loginBgVideo || !toggleMuteButton) return;
+    const loginContainer = document.getElementById("loginContainer");
+    const usernameInput = document.getElementById("username");
+    if (!loginVideoWrap || !loginBgVideo || !playVideoButton || !replayVideoButton || !continueButton || !toggleMuteButton || !loginContainer) return;
+    let isMuted = true;
 
-    const syncMuteLabel = () => {
-        toggleMuteButton.classList.toggle("is-muted", loginBgVideo.muted);
-        const label = loginBgVideo.muted ? "Unmute video" : "Mute video";
-        toggleMuteButton.setAttribute("aria-label", label);
-        toggleMuteButton.setAttribute("title", label);
+    const setStage = (stage) => {
+        loginVideoWrap.classList.remove("initial-thumb", "video-ended", "video-fallback");
+        if (stage === "initial") loginVideoWrap.classList.add("initial-thumb");
+        if (stage === "ended") loginVideoWrap.classList.add("video-ended");
+        if (stage === "fallback") loginVideoWrap.classList.add("video-fallback");
     };
 
-    loginBgVideo.addEventListener("error", () => {
-        loginVideoWrap.classList.add("video-fallback");
-    });
+    const syncMuteButton = () => {
+        toggleMuteButton.classList.toggle("is-muted", isMuted);
+        toggleMuteButton.setAttribute("aria-label", isMuted ? "Unmute video" : "Mute video");
+        toggleMuteButton.setAttribute("title", isMuted ? "Unmute video" : "Mute video");
+    };
+
+    const showLoginCard = () => {
+        loginBgVideo.pause();
+        document.body.classList.add("login-open");
+        loginContainer.classList.add("show");
+        if (usernameInput) usernameInput.focus();
+    };
+
+    const playFromStart = async () => {
+        document.body.classList.remove("login-open");
+        loginContainer.classList.remove("show");
+        setStage("playing");
+        try {
+            // Ensure metadata/source are ready before starting playback.
+            loginBgVideo.load();
+            loginBgVideo.currentTime = 0;
+            loginBgVideo.muted = isMuted;
+            await loginBgVideo.play();
+        } catch (_error) {
+            try {
+                loginBgVideo.muted = isMuted;
+                await loginBgVideo.play();
+            } catch (_retryError) {
+                setStage("fallback");
+            }
+        }
+    };
 
     loginBgVideo.addEventListener("ended", () => {
-        loginVideoWrap.classList.add("video-ended");
+        setStage("ended");
     });
 
+    loginBgVideo.addEventListener("error", () => {
+        setStage("fallback");
+    });
+
+    playVideoButton.addEventListener("click", playFromStart);
+    replayVideoButton.addEventListener("click", playFromStart);
+    continueButton.addEventListener("click", showLoginCard);
     toggleMuteButton.addEventListener("click", () => {
-        loginBgVideo.muted = !loginBgVideo.muted;
-        syncMuteLabel();
+        isMuted = !isMuted;
+        loginBgVideo.muted = isMuted;
+        syncMuteButton();
     });
 
-    syncMuteLabel();
+    loginBgVideo.muted = isMuted;
+    syncMuteButton();
+    setStage("initial");
 }
 
 async function checkExistingSession() {
@@ -73,7 +96,7 @@ async function checkExistingSession() {
         if (payload.authenticated) {
             sessionStorage.setItem("isLoggedIn", "true");
             sessionStorage.setItem("currentUser", payload.currentUser || "");
-            window.location.href = "index.html";
+            window.location.href = "dashboard.html";
         }
     } catch (error) {
         console.error("Session check failed:", error);
@@ -134,14 +157,13 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         // Keep existing tab-level flags for current UI behavior.
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("currentUser", payload.currentUser || username);
-        window.location.href = "index.html";
+        window.location.href = "dashboard.html";
     } catch (error) {
         console.error("Login error:", error);
         showError("Unable to sign in. Please try again.");
     }
 });
 
-setupLoginCardToggle();
-setupVideoControls();
+setupVideoExperience();
 checkExistingSession();
 

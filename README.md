@@ -8,7 +8,7 @@ It serves frontend pages from `public/` and protected JSON/Excel-backed APIs fro
 - Welcome and dashboard flow
 - About Chennai content from JSON
 - Places carousel with image gallery and Google Maps directions link
-- Agenda view loaded dynamically from Excel (`config/Agenda.xlsx`)
+- Agenda view loaded dynamically from the latest Excel file in `config/`, with sheet/column visibility controlled by workbook `Config` sheet
 - Travel essentials page
 
 ## Tech Stack
@@ -35,7 +35,7 @@ It serves frontend pages from `public/` and protected JSON/Excel-backed APIs fro
 |       |-- images/
 |       `-- audio/
 |-- config/
-|   |-- Agenda.xlsx
+|   |-- *.xlsx / *.xls (latest modified file is used for agenda)
 |   `-- data/
 |       |-- settings.json
 |       |-- about.json
@@ -107,9 +107,18 @@ Content source for the About Chennai page (title, summary, highlights, history, 
 ### `config/data/places.json`
 Content source for Places page (name, description, destination, primary image, optional image gallery, notes).
 
-### `config/Agenda.xlsx`
+### `config/*.xlsx` / `config/*.xls`
 Agenda source file read at runtime by backend.
-- If a `Config` sheet exists, it is used to define visible columns per sheet.
+- The backend automatically uses the most recently modified Excel file in `config/`.
+- If a workbook exists in `config/`, it should include a `Config` sheet to control UI rendering.
+- `Config` sheet must have two columns:
+  - `SheetName` (sheet to render in UI)
+  - `Columns` (comma-separated column headers to render for that sheet)
+- `Config` entries are read from row 2 onward (row 1 is header).
+- If `Config` contains entries, only listed sheets are rendered in UI.
+- For each listed sheet, only the configured `Columns` are rendered in UI.
+- Sheet/column matching is whitespace-trimmed and case-insensitive.
+- Header row in each data sheet is auto-detected (first non-empty row with at least 2 populated cells).
 - Hidden sheets are skipped.
 - Empty rows are skipped.
 

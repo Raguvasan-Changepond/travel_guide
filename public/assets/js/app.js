@@ -289,7 +289,7 @@ function initWelcome() {
 
 function initDashboard() {
   const title = document.getElementById("header-title");
-  if (title) title.textContent = "Your Dashboard";
+  if (title) title.textContent = "Welcome, Manuel and Ino";
 }
 
 async function initAbout() {
@@ -623,7 +623,9 @@ async function bootstrap() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", bootstrap);
+document.addEventListener("DOMContentLoaded", () => {
+  bootstrap();
+});
 
 window.addEventListener("pageshow", (event) => {
   if (!event.persisted) return;

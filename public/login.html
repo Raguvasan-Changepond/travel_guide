@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Travel Guide</title>
+    <link rel="icon" type="image/jpeg" href="assets/images/cp_logo_fav_iccon.jfif">
     <link rel="stylesheet" href="assets/css/styles.css?v=20260220-ui30">
     <style>
         :root {
@@ -35,7 +36,7 @@
         .login-video-wrap {
             position: fixed;
             inset: 0;
-            z-index: -3;
+            z-index: 0;
             background: #000000;
             overflow: hidden;
         }
@@ -60,13 +61,164 @@
             transition: opacity 260ms ease;
         }
 
+        .login-video-wrap.initial-thumb .login-end-thumb,
         .login-video-wrap.video-ended .login-end-thumb,
         .login-video-wrap.video-fallback .login-end-thumb {
             opacity: 1;
         }
 
+        .login-video-wrap.initial-thumb .login-bg-video,
         .login-video-wrap.video-fallback .login-bg-video,
         .login-video-wrap.video-ended .login-bg-video {
+            display: none;
+        }
+
+        .video-play-center {
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            z-index: 8;
+            pointer-events: none;
+        }
+
+        .video-play-btn {
+            width: 86px;
+            height: 86px;
+            border-radius: 999px;
+            border: 1px solid rgba(210, 230, 247, 0.8);
+            background: rgba(233, 246, 255, 0.88);
+            color: #1c4167;
+            box-shadow: 0 16px 28px rgba(20, 39, 59, 0.3);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+            pointer-events: auto;
+        }
+
+        .video-play-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 20px 30px rgba(20, 39, 59, 0.34);
+            background: rgba(239, 250, 255, 0.95);
+        }
+
+        .video-play-btn svg {
+            width: 30px;
+            height: 30px;
+            fill: currentColor;
+            margin-left: 2px;
+        }
+
+        .video-end-actions {
+            position: fixed;
+            left: 50%;
+            top: calc(50% + 82px);
+            bottom: auto;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            background: rgba(9, 18, 30, 0.28);
+            backdrop-filter: blur(8px);
+        }
+
+        .video-action-btn {
+            border: 1px solid rgba(195, 221, 244, 0.8);
+            background: rgba(237, 248, 255, 0.92);
+            color: #1c4167;
+            border-radius: 12px;
+            min-height: 40px;
+            padding: 0 14px;
+            font: 700 0.9rem "Source Sans 3", sans-serif;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(20, 39, 59, 0.26);
+            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+        }
+
+        .video-action-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(244, 252, 255, 0.97);
+            box-shadow: 0 14px 24px rgba(20, 39, 59, 0.3);
+        }
+
+        .video-action-btn-continue {
+            background: linear-gradient(135deg, var(--login-primary) 0%, var(--login-primary-dark) 100%);
+            color: #102b46;
+            border-color: rgba(194, 222, 247, 0.8);
+        }
+
+        .video-audio-controls {
+            position: fixed;
+            right: clamp(14px, 2.4vw, 26px);
+            top: clamp(14px, 2.8vh, 24px);
+            z-index: 12;
+        }
+
+        .video-audio-btn {
+            border: 1px solid rgba(195, 221, 244, 0.8);
+            background: rgba(237, 248, 255, 0.92);
+            color: #1c4167;
+            border-radius: 999px;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(20, 39, 59, 0.26);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+        }
+
+        .video-audio-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(244, 252, 255, 0.97);
+            box-shadow: 0 14px 24px rgba(20, 39, 59, 0.3);
+        }
+
+        .video-audio-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .video-audio-btn .icon-muted {
+            display: none;
+        }
+
+        .video-audio-btn.is-muted .icon-muted {
+            display: block;
+        }
+
+        .video-audio-btn.is-muted .icon-unmuted {
+            display: none;
+        }
+
+        .login-video-wrap.initial-thumb .video-play-center {
+            display: grid;
+        }
+
+        .login-video-wrap:not(.initial-thumb) .video-play-center {
+            display: none;
+        }
+
+        .login-video-wrap.video-ended .video-end-actions,
+        .login-video-wrap.video-fallback .video-end-actions {
+            display: flex;
+        }
+
+        body.login-open .video-play-center,
+        body.login-open .login-video-wrap .video-end-actions,
+        body.login-open .login-video-wrap .video-audio-controls {
             display: none;
         }
 
@@ -94,6 +246,7 @@
 
         .login-container {
             position: relative;
+            z-index: 20;
             width: min(460px, 100%);
             padding: clamp(1.1rem, 2vw, 1.45rem);
             background: linear-gradient(148deg, rgba(255, 255, 255, 0.82) 0%, rgba(244, 250, 255, 0.72) 100%);
@@ -114,64 +267,6 @@
             transform: translateY(0) scale(1);
             pointer-events: auto;
             visibility: visible;
-        }
-
-        .login-top-controls {
-            position: fixed;
-            top: 14px;
-            right: 14px;
-            z-index: 12;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .login-control-button {
-            border: 1px solid rgba(178, 208, 236, 0.7);
-            background: rgba(239, 248, 255, 0.88);
-            color: #1f4164;
-            border-radius: 999px;
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(40, 68, 95, 0.26);
-            backdrop-filter: blur(8px);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
-        }
-
-        .login-control-button:hover {
-            transform: translateY(-1px);
-            background: rgba(229, 241, 252, 0.94);
-            box-shadow: 0 14px 24px rgba(40, 68, 95, 0.28);
-        }
-
-        .login-control-button svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .login-control-button .icon-muted,
-        .login-control-button .icon-card-open {
-            display: none;
-        }
-
-        .login-control-button.is-muted .icon-muted,
-        .login-control-button.is-card-open .icon-card-open {
-            display: block;
-        }
-
-        .login-control-button.is-muted .icon-unmuted,
-        .login-control-button.is-card-open .icon-card-closed {
-            display: none;
         }
 
         .login-header {
@@ -346,16 +441,33 @@
             .form-group input {
                 height: 52px;
             }
+
+            .video-end-actions {
+                top: calc(50% + 72px);
+                bottom: auto;
+                gap: 8px;
+                padding: 8px;
+                width: calc(100% - 20px);
+                max-width: 420px;
+            }
+
+            .video-action-btn {
+                flex: 1;
+                min-height: 42px;
+            }
+
+            .video-audio-controls {
+                right: 10px;
+                top: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-video-wrap" id="loginVideoWrap">
+    <div class="login-video-wrap initial-thumb" id="loginVideoWrap">
         <video
             class="login-bg-video"
             id="loginBgVideo"
-            autoplay
-            muted="muted"
             playsinline
             preload="metadata"
             poster="assets/video/Thumbnail.png"
@@ -364,29 +476,31 @@
             <source src="assets/video/avolta client.mp4" type="video/mp4">
         </video>
         <div class="login-end-thumb" id="loginEndThumb" aria-hidden="true"></div>
-    </div>
-
-    <div class="login-top-controls">
-        <button type="button" class="login-control-button" id="toggleMuteButton" aria-label="Toggle video audio" title="Toggle video audio">
-            <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
-                <path d="M15 9c1.5 1 1.5 5 0 6"></path>
-                <path d="M18 7c3 2 3 8 0 10"></path>
-            </svg>
-            <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
-                <path d="m15 9 5 6"></path>
-                <path d="m20 9-5 6"></path>
-            </svg>
-        </button>
-        <button type="button" class="login-control-button" id="toggleCardButton" aria-label="Toggle sign in card" title="Toggle sign in card">
-            <svg class="icon-card-closed" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m6 9 6 6 6-6"></path>
-            </svg>
-            <svg class="icon-card-open" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m6 15 6-6 6 6"></path>
-            </svg>
-        </button>
+        <div class="video-play-center">
+            <button type="button" class="video-play-btn" id="playVideoButton" aria-label="Play intro video" title="Play intro video">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 6v12l10-6z"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="video-end-actions" id="videoEndActions">
+            <button type="button" class="video-action-btn video-action-btn-continue" id="continueButton">Start Tour</button>
+            <button type="button" class="video-action-btn" id="replayVideoButton">Replay</button>
+        </div>
+        <div class="video-audio-controls">
+            <button type="button" class="video-audio-btn is-muted" id="toggleMuteButton" aria-label="Unmute video" title="Unmute video">
+                <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+                    <path d="M15 9c1.5 1 1.5 5 0 6"></path>
+                    <path d="M18 7c3 2 3 8 0 10"></path>
+                </svg>
+                <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+                    <path d="m15 9 5 6"></path>
+                    <path d="m20 9-5 6"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <div class="login-container" id="loginContainer">
@@ -426,7 +540,7 @@
         </form>
     </div>
 
-    <script src="assets/js/login.js?v=20260225-login-icons2"></script>
+    <script src="assets/js/login.js?v=20260225-login-stage-fix3"></script>
 </body>
 </html>
 
