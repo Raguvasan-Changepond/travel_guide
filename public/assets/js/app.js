@@ -335,11 +335,7 @@ async function initPlaces() {
 
   const places = await getJson(PLACES_PATH);
   wrap.innerHTML = `
-    <div class="places-carousel">
-      <div class="carousel-viewport">
-        <div id="places-track" class="carousel-track"></div>
-      </div>
-    </div>
+    <div id="places-track" class="places-grid"></div>
   `;
 
   const dialog = document.getElementById("place-dialog");
@@ -351,21 +347,16 @@ async function initPlaces() {
   const dialogNotes = document.getElementById("dialog-notes");
   const directionLink = document.getElementById("direction-link");
   const track = document.getElementById("places-track");
-  const viewport = wrap.querySelector(".carousel-viewport");
-  const positionLabel = document.getElementById("places-position");
 
-  if (!track || !viewport) return;
+  if (!track) return;
 
   if (closeDialog && dialog) {
     closeDialog.addEventListener("click", () => dialog.close());
   }
 
-  let currentIndex = 0;
-  const slideNodes = [];
-
-  places.forEach((place, index) => {
-    const slide = document.createElement("article");
-    slide.className = "place-slide";
+  places.forEach((place) => {
+    const cardWrap = document.createElement("article");
+    cardWrap.className = "place-item";
     const button = document.createElement("button");
     button.className = "place-card";
     button.type = "button";
@@ -374,10 +365,6 @@ async function initPlaces() {
       <h2>${safeHtml(place.name)}</h2>
     `;
     button.addEventListener("click", () => {
-      if (index !== currentIndex) {
-        updateCarousel(index);
-        return;
-      }
       if (!dialog || !dialogImage || !dialogTitle || !dialogDescription || !directionLink || !dialogGallery || !dialogNotes) return;
       const gallerySource = Array.isArray(place.images) && place.images.length ? place.images : [place.image];
       const galleryImages = [...new Set(gallerySource.filter(Boolean))];
@@ -407,43 +394,9 @@ async function initPlaces() {
       directionLink.href = buildDirectionsUrl(place.destination);
       dialog.showModal();
     });
-    slide.appendChild(button);
-    track.appendChild(slide);
-    slideNodes.push(slide);
+    cardWrap.appendChild(button);
+    track.appendChild(cardWrap);
   });
-
-  function updateCarousel(nextIndex) {
-    const total = slideNodes.length;
-    currentIndex = (nextIndex + total) % total;
-    const activeSlide = slideNodes[currentIndex];
-    let clampedOffset = 0;
-
-    if (track.scrollWidth <= viewport.clientWidth) {
-      track.classList.add("is-fit");
-      clampedOffset = 0;
-    } else {
-      track.classList.remove("is-fit");
-      const activeCenter = activeSlide.offsetLeft + (activeSlide.offsetWidth / 2);
-      const viewportCenter = viewport.clientWidth / 2;
-      const rawOffset = viewportCenter - activeCenter;
-      const minOffset = Math.min(0, viewport.clientWidth - track.scrollWidth);
-      clampedOffset = Math.max(minOffset, Math.min(0, rawOffset));
-    }
-
-    track.style.transform = `translateX(${clampedOffset}px)`;
-
-    slideNodes.forEach((slide, index) => {
-      slide.classList.toggle("is-active", index === currentIndex);
-      slide.classList.toggle("is-near", Math.abs(index - currentIndex) === 1);
-    });
-    if (positionLabel) {
-      positionLabel.textContent = `${currentIndex + 1} / ${total}`;
-    }
-  }
-
-  window.addEventListener("resize", () => updateCarousel(currentIndex));
-
-  updateCarousel(0);
 }
 
 function renderAgendaTable(rows, target, headers = null) {

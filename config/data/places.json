@@ -104,5 +104,56 @@
       "assets/images/places/egmore-museum/egmore-museum-4.jpg",
       "assets/images/places/egmore-museum/egmore-museum-5.jpg"
     ]
+  },
+  {
+    "name": "Valluvar Kottam",
+    "description": "Monument dedicated to Tamil poet Thiruvalluvar, featuring a large stone chariot and an auditorium of carved verses.",
+    "destination": "Valluvar Kottam, Chennai",
+    "image": "assets/images/places/valluvar-kottam/thumbnail.jpg",
+    "quickNotes": [
+      "Landmark cultural monument in central Chennai.",
+      "Known for the giant temple-chariot style structure.",
+      "Ideal for a short heritage and architecture stop.",
+      "Easily accessible from major city routes."
+    ],
+    "images": [
+      "assets/images/places/valluvar-kottam/valluvar-kottam-1.jpg",
+      "assets/images/places/valluvar-kottam/valluvar-kottam-2.jpg",
+      "assets/images/places/valluvar-kottam/valluvar-kottam-3.jpg"
+    ]
+  },
+  {
+    "name": "Santhome Church",
+    "description": "Historic basilica built over the traditional tomb site of St. Thomas, known for neo-gothic architecture.",
+    "destination": "Santhome Basilica, Chennai",
+    "image": "assets/images/places/santhome-church/thumbnail.jpg",
+    "quickNotes": [
+      "One of the major Christian heritage sites in Chennai.",
+      "Distinct white neo-gothic facade and serene interiors.",
+      "Suitable for a calm cultural and spiritual visit.",
+      "Located close to Marina and other city landmarks."
+    ],
+    "images": [
+      "assets/images/places/santhome-church/santhome-church-1.jpg",
+      "assets/images/places/santhome-church/santhome-church-2.jpg",
+      "assets/images/places/santhome-church/santhome-church-3.jpg"
+    ]
+  },
+  {
+    "name": "Kapaleeswarar Temple",
+    "description": "Renowned Dravidian-style temple in Mylapore dedicated to Lord Shiva, famous for its colorful gopuram.",
+    "destination": "Kapaleeshwarar Temple, Mylapore, Chennai",
+    "image": "assets/images/places/kapaleeswarar-temple/kapaleeswarar-temple-1.jpg",
+    "quickNotes": [
+      "Iconic Mylapore temple with intricate tower sculptures.",
+      "Active worship site with traditional South Indian rituals.",
+      "Best visited in early morning or evening hours.",
+      "Surrounded by vibrant local streets and shops."
+    ],
+    "images": [
+      "assets/images/places/kapaleeswarar-temple/kapaleeswarar-temple-1.jpg",
+      "assets/images/places/kapaleeswarar-temple/kapaleeswarar-temple-2.jpg",
+      "assets/images/places/kapaleeswarar-temple/kapaleeswarar-temple-3.jpg"
+    ]
   }
 ]

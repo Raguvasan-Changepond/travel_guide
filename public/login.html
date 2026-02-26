@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Travel Guide</title>
+    <meta property="og:title" content="Travel Guide - Login">
+    <meta property="og:description" content="Sign in to Travel Guide and start your journey.">
+    <meta property="og:image" content="/assets/video/Thumbnail.png">
+    <meta property="og:url" content="/login.html">
+    <meta property="og:type" content="website">
     <link rel="icon" type="image/jpeg" href="assets/images/cp_logo_fav_iccon.jfif">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260220-ui30">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260226-responsive1">
     <style>
         :root {
             --login-primary: #6eaeea;
@@ -459,6 +464,56 @@
             .video-audio-controls {
                 right: 10px;
                 top: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .login-container {
+                width: 100%;
+                padding: 0.7rem;
+                border-radius: 14px;
+            }
+
+            .login-subtitle {
+                font-size: 0.88rem;
+            }
+
+            .form-group input {
+                height: 48px;
+                border-radius: 12px;
+                padding: 0 12px;
+            }
+
+            .login-button {
+                height: 48px;
+                border-radius: 12px;
+                font-size: 0.96rem;
+            }
+
+            .video-play-btn {
+                width: 72px;
+                height: 72px;
+            }
+
+            .video-play-btn svg {
+                width: 26px;
+                height: 26px;
+            }
+
+            .video-end-actions {
+                top: calc(50% + 66px);
+                width: calc(100% - 14px);
+                gap: 6px;
+            }
+
+            .video-action-btn {
+                min-height: 40px;
+                padding: 0 10px;
+                font-size: 0.84rem;
             }
         }
     </style>

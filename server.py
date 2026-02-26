@@ -17,6 +17,7 @@ import hmac
 import json
 import openpyxl
 import os
+import re
 import secrets
 import threading
 import time
@@ -126,7 +127,7 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
         if route == "/favicon.ico":
             self.path = "/assets/images/cp_logo_fav_iccon.jfif"
             try:
-                return super().do_GET()
+                return self.serve_static_request(include_body=True)
             except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
                 return
 
@@ -151,7 +152,18 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
             return
 
         try:
-            return super().do_GET()
+            return self.serve_static_request(include_body=True)
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            return
+
+    def do_HEAD(self):
+        """Handle HEAD routes for static files."""
+        route = urllib.parse.urlparse(self.path).path
+        if route.startswith("/api/"):
+            self.send_json(404, {"error": "Endpoint not found"})
+            return
+        try:
+            return self.serve_static_request(include_body=False)
         except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
             return
 
@@ -168,6 +180,88 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
         if route.startswith("/api/"):
             self.send_json(404, {"error": "Endpoint not found"})
             return
+
+    def serve_static_request(self, include_body=True):
+        """Serve static files with byte-range support for media seeking."""
+        route = urllib.parse.urlparse(self.path).path
+        requested_path = Path(self.translate_path(route)).resolve()
+        public_root = PUBLIC_DIR.resolve()
+
+        if not str(requested_path).startswith(str(public_root)):
+            self.send_error(403, "Forbidden")
+            return
+
+        if requested_path.is_dir():
+            requested_path = (requested_path / "index.html").resolve()
+
+        if not requested_path.exists() or not requested_path.is_file():
+            self.send_error(404, "File not found")
+            return
+
+        file_size = requested_path.stat().st_size
+        range_header = self.headers.get("Range")
+        start = 0
+        end = file_size - 1
+        status_code = 200
+
+        if range_header:
+            match = re.match(r"bytes=(\d*)-(\d*)$", range_header.strip())
+            if not match:
+                self.send_error(416, "Invalid Range")
+                return
+
+            start_str, end_str = match.groups()
+            if start_str == "" and end_str == "":
+                self.send_error(416, "Invalid Range")
+                return
+
+            if start_str == "":
+                suffix_length = int(end_str)
+                if suffix_length <= 0:
+                    self.send_error(416, "Invalid Range")
+                    return
+                start = max(file_size - suffix_length, 0)
+            else:
+                start = int(start_str)
+                if start >= file_size:
+                    self.send_error(416, "Range Not Satisfiable")
+                    return
+
+            if end_str != "":
+                end = min(int(end_str), file_size - 1)
+            else:
+                end = file_size - 1
+
+            if end < start:
+                self.send_error(416, "Range Not Satisfiable")
+                return
+
+            status_code = 206
+
+        content_length = end - start + 1
+        content_type = self.guess_type(str(requested_path))
+
+        self.send_response(status_code)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Content-Length", str(content_length))
+        if status_code == 206:
+            self.send_header("Content-Range", f"bytes {start}-{end}/{file_size}")
+        self.end_headers()
+
+        if not include_body:
+            return
+
+        with requested_path.open("rb") as file_obj:
+            file_obj.seek(start)
+            remaining = content_length
+            chunk_size = 64 * 1024
+            while remaining > 0:
+                chunk = file_obj.read(min(chunk_size, remaining))
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
+                remaining -= len(chunk)
 
         self.send_error(405, "Method Not Allowed")
 
