@@ -8,19 +8,13 @@ Runs both static frontend and JSON APIs:
 - JSON config APIs
 """
 
-from http.cookies import SimpleCookie
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
-import hashlib
-import hmac
+from datetime import datetime
 import json
 import openpyxl
 import os
 import re
-import secrets
-import threading
-import time
 import urllib.parse
 
 
@@ -73,17 +67,7 @@ def read_env_int(name, default):
 
 
 class DynamicExcelHandler(SimpleHTTPRequestHandler):
-    """Serve static files and secure API endpoints."""
-
-    SESSION_COOKIE_NAME = "travelguide_session"
-    SESSION_TTL_MINUTES = read_env_int("SESSION_TTL_MINUTES", 480)
-    LOGIN_WINDOW_SECONDS = read_env_int("LOGIN_WINDOW_SECONDS", 300)
-    LOGIN_MAX_ATTEMPTS = read_env_int("LOGIN_MAX_ATTEMPTS", 8)
-    COOKIE_SECURE = os.getenv("COOKIE_SECURE", "").lower() in {"1", "true", "yes", "on"}
-
-    SESSIONS = {}
-    FAILED_LOGINS = {}
-    AUTH_LOCK = threading.Lock()
+    """Serve static files and API endpoints."""
 
     CONFIG_ENDPOINTS = {
         "/api/settings": DATA_DIR / "settings.json",
@@ -134,17 +118,10 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
         if route == "/api/health":
             self.send_json(200, {"status": "ok"})
             return
-        if route == "/api/session":
-            self.handle_session_status()
-            return
         if route in self.CONFIG_ENDPOINTS:
-            if not self.require_auth():
-                return
             self.handle_config_request(route)
             return
         if route == "/api/agenda":
-            if not self.require_auth():
-                return
             self.handle_agenda_request()
             return
         if route.startswith("/api/"):
@@ -171,12 +148,6 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
         """Handle POST routes."""
         route = urllib.parse.urlparse(self.path).path
 
-        if route == "/api/login":
-            self.handle_login()
-            return
-        if route == "/api/logout":
-            self.handle_logout()
-            return
         if route.startswith("/api/"):
             self.send_json(404, {"error": "Endpoint not found"})
             return
@@ -265,64 +236,8 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
 
         self.send_error(405, "Method Not Allowed")
 
-    def handle_login(self):
-        """Authenticate and create secure session."""
-        client_ip = self.get_client_ip()
-        if self.is_rate_limited(client_ip):
-            self.send_json(429, {"error": "Too many failed login attempts. Please try again shortly."})
-            return
-
-        try:
-            payload = self.read_json_body()
-        except ValueError as err:
-            self.send_json(400, {"error": str(err)})
-            return
-
-        username = str(payload.get("username", "")).strip()
-        password = str(payload.get("password", "")).strip()
-
-        if not username:
-            self.send_json(400, {"error": "Username cannot be empty."})
-            return
-        if not password:
-            self.send_json(400, {"error": "Password cannot be empty."})
-            return
-        if len(username) > 15:
-            self.send_json(400, {"error": "Username must be 15 characters or fewer."})
-            return
-        if len(password) > 15:
-            self.send_json(400, {"error": "Password must be 15 characters or fewer."})
-            return
-
-        is_valid, error_message = self.validate_login(username, password)
-        if not is_valid:
-            self.register_failed_login(client_ip)
-            self.send_json(401, {"error": error_message})
-            return
-
-        self.clear_failed_logins(client_ip)
-        session_id = self.create_session(username)
-        self.send_json(
-            200,
-            {"ok": True, "currentUser": username},
-            {"Set-Cookie": self.build_session_cookie(session_id)},
-        )
-
-    def handle_logout(self):
-        """Clear server session and cookie."""
-        self.destroy_session()
-        self.send_json(200, {"ok": True}, {"Set-Cookie": self.build_clear_cookie()})
-
-    def handle_session_status(self):
-        """Return current auth state."""
-        session = self.get_authenticated_session()
-        if not session:
-            self.send_json(200, {"authenticated": False})
-            return
-        self.send_json(200, {"authenticated": True, "currentUser": session["username"]})
-
     def handle_config_request(self, route):
-        """Serve JSON config files through authenticated APIs."""
+        """Serve JSON config files through APIs."""
         file_path = self.CONFIG_ENDPOINTS.get(route)
         if not file_path:
             self.send_json(404, {"error": "Config endpoint not found"})
@@ -347,13 +262,6 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
             self.send_json(500, {"error": str(err)})
         except Exception:
             self.send_json(500, {"error": "Unable to read agenda data"})
-
-    def require_auth(self):
-        """Enforce authenticated session for protected APIs."""
-        if not self.get_authenticated_session():
-            self.send_json(401, {"error": "Unauthorized"})
-            return False
-        return True
 
     def get_agenda_from_excel(self):
         """Read Excel file and return JSON data."""
@@ -487,181 +395,6 @@ class DynamicExcelHandler(SimpleHTTPRequestHandler):
             # Client disconnected before response write completed.
             return
 
-    def get_client_ip(self):
-        """Resolve client IP, including proxy-forwarded header."""
-        forwarded = self.headers.get("X-Forwarded-For")
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-        return self.client_address[0]
-
-    def get_credentials(self):
-        """Load credentials from secure server-side file."""
-        credentials_path = DATA_DIR / "credentials.json"
-        if not credentials_path.exists():
-            return []
-
-        try:
-            data = json.loads(credentials_path.read_text(encoding="utf-8"))
-        except Exception:
-            return []
-
-        users = data.get("users", [])
-        return users if isinstance(users, list) else []
-
-    def validate_login(self, username, password):
-        """Validate credentials while preserving existing user feedback."""
-        users = self.get_credentials()
-
-        for user in users:
-            stored_username = str(user.get("username", ""))
-            if not hmac.compare_digest(stored_username, username):
-                continue
-
-            if self.verify_password(password, user):
-                return True, None
-            return False, "Your password is invalid."
-
-        return False, "Your username is invalid."
-
-    def verify_password(self, provided_password, user):
-        """Verify plain text or PBKDF2 hash password formats."""
-        stored_hash = user.get("password_hash")
-        if stored_hash:
-            return self.verify_pbkdf2_hash(provided_password, str(stored_hash))
-
-        stored_password = user.get("password")
-        if stored_password is None:
-            return False
-        return hmac.compare_digest(str(stored_password), provided_password)
-
-    def verify_pbkdf2_hash(self, provided_password, stored_hash):
-        """
-        Verify password hash format:
-        pbkdf2_sha256$<iterations>$<salt>$<hex_digest>
-        """
-        parts = stored_hash.split("$")
-        if len(parts) != 4 or parts[0] != "pbkdf2_sha256":
-            return False
-
-        try:
-            iterations = int(parts[1])
-        except ValueError:
-            return False
-
-        salt = parts[2]
-        expected_digest = parts[3]
-        computed_digest = hashlib.pbkdf2_hmac(
-            "sha256",
-            provided_password.encode("utf-8"),
-            salt.encode("utf-8"),
-            iterations,
-        ).hex()
-        return hmac.compare_digest(computed_digest, expected_digest)
-
-    def is_rate_limited(self, client_ip):
-        """Simple per-IP login rate limit."""
-        now = time.time()
-        with self.AUTH_LOCK:
-            attempts = self.FAILED_LOGINS.get(client_ip, [])
-            attempts = [ts for ts in attempts if now - ts < self.LOGIN_WINDOW_SECONDS]
-            self.FAILED_LOGINS[client_ip] = attempts
-            return len(attempts) >= self.LOGIN_MAX_ATTEMPTS
-
-    def register_failed_login(self, client_ip):
-        """Record failed login attempts for rate limit checks."""
-        now = time.time()
-        with self.AUTH_LOCK:
-            attempts = self.FAILED_LOGINS.get(client_ip, [])
-            attempts = [ts for ts in attempts if now - ts < self.LOGIN_WINDOW_SECONDS]
-            attempts.append(now)
-            self.FAILED_LOGINS[client_ip] = attempts
-
-    def clear_failed_logins(self, client_ip):
-        """Clear failed login state after successful login."""
-        with self.AUTH_LOCK:
-            self.FAILED_LOGINS.pop(client_ip, None)
-
-    def create_session(self, username):
-        """Create a new authenticated session."""
-        session_id = secrets.token_urlsafe(48)
-        expires_at = datetime.now(timezone.utc) + timedelta(minutes=self.SESSION_TTL_MINUTES)
-
-        with self.AUTH_LOCK:
-            self.cleanup_expired_sessions()
-            self.SESSIONS[session_id] = {
-                "username": username,
-                "expires_at": expires_at,
-            }
-        return session_id
-
-    def get_authenticated_session(self):
-        """Return active session data, refreshing session expiry."""
-        session_id = self.get_session_id_from_cookie()
-        if not session_id:
-            return None
-
-        with self.AUTH_LOCK:
-            self.cleanup_expired_sessions()
-            session = self.SESSIONS.get(session_id)
-            if not session:
-                return None
-
-            session["expires_at"] = datetime.now(timezone.utc) + timedelta(minutes=self.SESSION_TTL_MINUTES)
-            return {"session_id": session_id, "username": session["username"]}
-
-    def destroy_session(self):
-        """Remove active session if present."""
-        session_id = self.get_session_id_from_cookie()
-        if not session_id:
-            return
-        with self.AUTH_LOCK:
-            self.SESSIONS.pop(session_id, None)
-
-    def cleanup_expired_sessions(self):
-        """Purge expired sessions."""
-        now = datetime.now(timezone.utc)
-        expired_session_ids = [sid for sid, data in self.SESSIONS.items() if data["expires_at"] <= now]
-        for session_id in expired_session_ids:
-            self.SESSIONS.pop(session_id, None)
-
-    def get_session_id_from_cookie(self):
-        """Read session cookie from request headers."""
-        cookie_header = self.headers.get("Cookie")
-        if not cookie_header:
-            return None
-
-        cookie = SimpleCookie()
-        cookie.load(cookie_header)
-        morsel = cookie.get(self.SESSION_COOKIE_NAME)
-        return morsel.value if morsel else None
-
-    def build_session_cookie(self, session_id):
-        """Build secure session cookie string."""
-        cookie = SimpleCookie()
-        cookie[self.SESSION_COOKIE_NAME] = session_id
-        morsel = cookie[self.SESSION_COOKIE_NAME]
-        morsel["path"] = "/"
-        morsel["httponly"] = True
-        morsel["samesite"] = "Lax"
-        morsel["max-age"] = str(self.SESSION_TTL_MINUTES * 60)
-        if self.COOKIE_SECURE:
-            morsel["secure"] = True
-        return morsel.OutputString()
-
-    def build_clear_cookie(self):
-        """Build cookie string that removes session cookie."""
-        cookie = SimpleCookie()
-        cookie[self.SESSION_COOKIE_NAME] = ""
-        morsel = cookie[self.SESSION_COOKIE_NAME]
-        morsel["path"] = "/"
-        morsel["httponly"] = True
-        morsel["samesite"] = "Lax"
-        morsel["max-age"] = "0"
-        morsel["expires"] = "Thu, 01 Jan 1970 00:00:00 GMT"
-        if self.COOKIE_SECURE:
-            morsel["secure"] = True
-        return morsel.OutputString()
-
     def log_message(self, format, *args):
         """Reduce noisy static logs while keeping page/API hits visible."""
         if self.path.startswith("/assets/"):
@@ -683,7 +416,7 @@ if __name__ == "__main__":
 
     print("Starting Travel Guide server...")
     print(f"Open: http://localhost:{port}")
-    print("Session auth enabled; API data is protected")
+    print("Authentication disabled; API data is public")
     print("Press Ctrl+C to stop\n")
 
     try:

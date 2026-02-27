@@ -1,66 +1,11 @@
 ﻿// Customization entry points for non-technical users.
-const SETTINGS_PATH = "/api/settings";
-const ABOUT_PATH = "/api/about";
-const PLACES_PATH = "/api/places";
+const SETTINGS_PATH = "api/settings";
+const ABOUT_PATH = "api/about";
+const PLACES_PATH = "api/places";
 
 const state = {
   settings: null
 };
-
-function redirectToLogin() {
-  sessionStorage.removeItem("isLoggedIn");
-  sessionStorage.removeItem("currentUser");
-  if (!window.location.pathname.includes("login.html")) {
-    window.location.href = "login.html";
-  }
-}
-
-// Check if user is logged in
-async function checkLoginStatus() {
-  try {
-    const response = await fetch("/api/session", {
-      method: "GET",
-      cache: "no-store",
-      credentials: "same-origin"
-    });
-
-    if (!response.ok) {
-      redirectToLogin();
-      return false;
-    }
-
-    const payload = await response.json();
-    if (!payload.authenticated) {
-      redirectToLogin();
-      return false;
-    }
-
-    sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.setItem("currentUser", payload.currentUser || "");
-    return true;
-  } catch (err) {
-    console.error("Session check failed:", err);
-    redirectToLogin();
-    return false;
-  }
-}
-
-// Logout function
-async function logout() {
-  try {
-    await fetch("/api/logout", {
-      method: "POST",
-      cache: "no-store",
-      credentials: "same-origin"
-    });
-  } catch (err) {
-    console.error("Logout request failed:", err);
-  } finally {
-    sessionStorage.removeItem("isLoggedIn");
-    sessionStorage.removeItem("currentUser");
-    window.location.href = "login.html";
-  }
-}
 
 // Initialize menu toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -96,10 +41,6 @@ async function getJson(path) {
     cache: "no-store",
     credentials: "same-origin"
   });
-  if (res.status === 401) {
-    redirectToLogin();
-    throw new Error("AUTH_REQUIRED");
-  }
   if (!res.ok) {
     throw new Error(`Failed to load ${path} (${res.status})`);
   }
@@ -473,10 +414,6 @@ async function initAgenda() {
       cache: "no-store",
       credentials: "same-origin"
     });
-    if (res.status === 401) {
-      redirectToLogin();
-      return;
-    }
     if (!res.ok) throw new Error("Server not running. Start with: python server.py");
     const agendaData = await res.json();
     
@@ -541,8 +478,6 @@ async function initAgenda() {
 
 async function bootstrap() {
   const page = document.body.dataset.page;
-  const authenticated = await checkLoginStatus();
-  if (!authenticated) return;
 
   try {
     state.settings = await getJson(SETTINGS_PATH);
@@ -567,7 +502,6 @@ async function bootstrap() {
         break;
     }
   } catch (err) {
-    if (err.message === "AUTH_REQUIRED") return;
     console.error(err);
     const fallback = document.querySelector("main");
     if (fallback) {

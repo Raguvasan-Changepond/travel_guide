@@ -4,14 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Travel Guide | Welcome</title>
-  <meta property="og:title" content="Travel Guide">
-  <meta property="og:description" content="Start your journey.">
-  <meta property="og:image" content="https://changepond.com/avolta/in-flight-magazine/assets/video/Thumbnail.png">
-  <meta property="og:url" content="https://changepond.com/avolta/in-flight-magazine/index.html">
-  <meta property="og:type" content="website">
+  <title>Avolta Client Visit Intro Video</title>
+
+
+<meta property="og:title" content="Avolta Client Visit Intro Video">
+<meta property="og:description" content="Watch the Avolta client visit intro video.">
+<meta property="og:type" content="video.other">
+ 
+<meta property="og:url" content="https://changepond.com/avolta/video.html">
+ 
+<meta property="og:image" content="https://changepond.com/avolta/in-flight-magazine/assets/video/Thumbnail.png">
+
+<meta property="og:video" content="https://changepond.com/avolta/in-flight-magazine/assets/video/video.mp4">
+
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1920">
+<meta property="og:video:height" content="1080">
+ 
+<!-- Twitter / WhatsApp support -->
+<meta name="twitter:card" content="player">
+<meta name="twitter:title" content="Avolta Client Visit Intro Video">
+<meta name="twitter:description" content="Watch the Avolta client visit intro video.">
+https://changepond.com/avolta/in-flight-magazine/assets/video/Thumbnail.png">
+
+
   <link rel="icon" type="image/jpeg" href="assets/images/cp_logo_fav_iccon.jfif">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260226-responsive1">
   <style>
     :root {
       --intro-primary: #6eaeea;
@@ -20,13 +37,13 @@
 
     body {
       margin: 0;
+      background: #000;
       min-height: 100vh;
       font-family: "Source Sans 3", sans-serif;
-      background: #000;
       overflow: hidden;
     }
 
-    .login-video-wrap {
+    .video-wrap {
       position: fixed;
       inset: 0;
       z-index: 0;
@@ -34,7 +51,7 @@
       overflow: hidden;
     }
 
-    .login-bg-video {
+    .bg-video {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -45,7 +62,7 @@
       filter: saturate(1.02) contrast(1.03);
     }
 
-    .login-end-thumb {
+    .end-thumb {
       position: absolute;
       inset: 0;
       background: #000 url("assets/video/Thumbnail.png") center / contain no-repeat;
@@ -54,15 +71,15 @@
       transition: opacity 260ms ease;
     }
 
-    .login-video-wrap.initial-thumb .login-end-thumb,
-    .login-video-wrap.video-ended .login-end-thumb,
-    .login-video-wrap.video-fallback .login-end-thumb {
+    .video-wrap.initial-thumb .end-thumb,
+    .video-wrap.video-ended .end-thumb,
+    .video-wrap.video-fallback .end-thumb {
       opacity: 1;
     }
 
-    .login-video-wrap.initial-thumb .login-bg-video,
-    .login-video-wrap.video-fallback .login-bg-video,
-    .login-video-wrap.video-ended .login-bg-video {
+    .video-wrap.initial-thumb .bg-video,
+    .video-wrap.video-fallback .bg-video,
+    .video-wrap.video-ended .bg-video {
       display: none;
     }
 
@@ -87,7 +104,6 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
       pointer-events: auto;
     }
 
@@ -122,10 +138,9 @@
       padding: 0 14px;
       font: 700 0.9rem "Source Sans 3", sans-serif;
       cursor: pointer;
-      box-shadow: 0 10px 20px rgba(20, 39, 59, 0.26);
     }
 
-    .video-action-btn-continue {
+    .video-action-btn-primary {
       background: linear-gradient(135deg, var(--intro-primary) 0%, var(--intro-primary-dark) 100%);
       color: #102b46;
       border-color: rgba(194, 222, 247, 0.8);
@@ -174,55 +189,35 @@
       display: none;
     }
 
-    .login-video-wrap.initial-thumb .video-play-center {
+    .video-wrap.initial-thumb .video-play-center {
       display: grid;
     }
 
-    .login-video-wrap:not(.initial-thumb) .video-play-center {
+    .video-wrap:not(.initial-thumb) .video-play-center {
       display: none;
     }
 
-    .login-video-wrap.video-ended .video-end-actions,
-    .login-video-wrap.video-fallback .video-end-actions {
+    .video-wrap.video-ended .video-end-actions,
+    .video-wrap.video-fallback .video-end-actions {
       display: flex;
     }
 
-    .video-skip-btn {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
-      z-index: 11;
-      display: none;
-      border: 1px solid rgba(195, 221, 244, 0.65);
-      background: rgba(17, 27, 39, 0.35);
-      color: #dbeaff;
-      border-radius: 10px;
-      min-height: 24px;
-      padding: 0 8px;
-      font: 600 0.7rem "Source Sans 3", sans-serif;
-      cursor: pointer;
-    }
-
-    .login-video-wrap.playing .video-skip-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
   </style>
 </head>
 <body>
-  <div class="login-video-wrap initial-thumb" id="loginVideoWrap">
+  <div class="video-wrap initial-thumb" id="videoWrap">
     <video
-      class="login-bg-video"
-      id="loginBgVideo"
+      class="bg-video"
+      id="sharedVideo"
       playsinline
       preload="metadata"
-      poster="assets/video/Thumbnail.png"
+      poster="https://www.changepond.com/avolta/in-flight-magazine/assets/video/Thumbnail.png"
       aria-hidden="true"
     >
-      <source src="assets/video/avolta client.mp4" type="video/mp4">
+      <source src="https://www.changepond.com/avolta/in-flight-magazine/assets/video/avolta client.mp4" type="video/mp4">
+      Your browser does not support the video tag.
     </video>
-    <div class="login-end-thumb" id="loginEndThumb" aria-hidden="true"></div>
+    <div class="end-thumb" aria-hidden="true"></div>
     <div class="video-play-center">
       <button type="button" class="video-play-btn" id="playVideoButton" aria-label="Play intro video" title="Play intro video">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -231,8 +226,7 @@
       </button>
     </div>
     <div class="video-end-actions" id="videoEndActions">
-      <button type="button" class="video-action-btn video-action-btn-continue" id="continueButton">Start Tour</button>
-      <button type="button" class="video-action-btn" id="replayVideoButton">Replay</button>
+      <button type="button" class="video-action-btn video-action-btn-primary" id="playAgainButton">Replay</button>
     </div>
     <div class="video-audio-controls">
       <button type="button" class="video-audio-btn is-muted" id="toggleMuteButton" aria-label="Unmute video" title="Unmute video">
@@ -248,9 +242,64 @@
         </svg>
       </button>
     </div>
-    <button type="button" class="video-skip-btn" id="skipVideoButton" aria-label="Skip intro video">Skip</button>
   </div>
 
-  <script src="assets/js/login.js?v=20260225-login-stage-fix3"></script>
+  <script>
+    const videoWrap = document.getElementById("videoWrap");
+    const video = document.getElementById("sharedVideo");
+    const playButton = document.getElementById("playVideoButton");
+    const playAgainButton = document.getElementById("playAgainButton");
+    const toggleMuteButton = document.getElementById("toggleMuteButton");
+
+    if (videoWrap && video && playButton && playAgainButton && toggleMuteButton) {
+      let isMuted = true;
+
+      const setStage = (stage) => {
+        videoWrap.classList.remove("initial-thumb", "playing", "video-ended", "video-fallback");
+        if (stage === "initial") videoWrap.classList.add("initial-thumb");
+        if (stage === "playing") videoWrap.classList.add("playing");
+        if (stage === "ended") videoWrap.classList.add("video-ended");
+        if (stage === "fallback") videoWrap.classList.add("video-fallback");
+      };
+
+      const syncMuteButton = () => {
+        toggleMuteButton.classList.toggle("is-muted", isMuted);
+        toggleMuteButton.setAttribute("aria-label", isMuted ? "Unmute video" : "Mute video");
+        toggleMuteButton.setAttribute("title", isMuted ? "Unmute video" : "Mute video");
+      };
+
+      const playFromStart = async () => {
+        setStage("playing");
+        try {
+          video.load();
+          video.currentTime = 0;
+          video.muted = isMuted;
+          await video.play();
+        } catch (_error) {
+          try {
+            video.muted = isMuted;
+            await video.play();
+          } catch (_retryError) {
+            setStage("fallback");
+          }
+        }
+      };
+
+      video.addEventListener("ended", () => setStage("ended"));
+      video.addEventListener("error", () => setStage("fallback"));
+
+      playButton.addEventListener("click", playFromStart);
+      playAgainButton.addEventListener("click", playFromStart);
+      toggleMuteButton.addEventListener("click", () => {
+        isMuted = !isMuted;
+        video.muted = isMuted;
+        syncMuteButton();
+      });
+
+      video.muted = isMuted;
+      syncMuteButton();
+      setStage("initial");
+    }
+  </script>
 </body>
 </html>
